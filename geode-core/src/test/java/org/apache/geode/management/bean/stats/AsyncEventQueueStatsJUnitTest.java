@@ -52,12 +52,27 @@ public class AsyncEventQueueStatsJUnitTest extends MBeanStatsTestCase {
     sample();
 
     assertEquals(0, getEventQueueSize());
+  }
 
+  @Test
+  public void testSenderSecondaryQueueStats() throws InterruptedException {
+    // test secondary
+    asyncEventQueueStats.setSecondaryQueueSize(10);
 
+    sample();
+    assertEquals(10, getEventSecondaryQueueSize());
+
+    asyncEventQueueStats.setSecondaryQueueSize(0);
+    sample();
+
+    assertEquals(0, getEventSecondaryQueueSize());
   }
 
   private int getEventQueueSize() {
     return bridge.getEventQueueSize();
   }
 
+  private int getEventSecondaryQueueSize() {
+    return bridge.getEventSecondaryQueueSize();
+  }
 }

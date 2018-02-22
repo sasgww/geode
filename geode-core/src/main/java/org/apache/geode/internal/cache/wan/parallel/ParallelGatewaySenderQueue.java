@@ -1020,6 +1020,7 @@ public class ParallelGatewaySenderQueue implements RegionQueue {
         brq.destroyKey(key);
       }
       stats.decQueueSize();
+      stats.decSecondaryQueueSize();
     } catch (EntryNotFoundException e) {
       if (!this.sender.isBatchConflationEnabled() && logger.isDebugEnabled()) {
         logger.debug(

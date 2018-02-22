@@ -106,6 +106,10 @@ public class AsyncEventQueueMBeanBridge {
     return getStatistic(StatsKey.ASYNCEVENTQUEUE_EVENTS_QUEUE_SIZE).intValue();
   }
 
+  public int getEventSecondaryQueueSize() {
+    return getStatistic(StatsKey.ASYNCEVENTQUEUE_EVENTS_SECONDARY_QUEUE_SIZE).intValue();
+  }
+
   private Number getStatistic(String statName) {
     if (monitor != null) {
       return monitor.getStatistic(statName);

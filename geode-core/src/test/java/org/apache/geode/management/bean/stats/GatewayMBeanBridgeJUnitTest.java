@@ -54,6 +54,7 @@ public class GatewayMBeanBridgeJUnitTest extends MBeanStatsTestCase {
     senderStats.incBatchesRedistributed();
     senderStats.incEventsReceived();
     Mockito.when(sender.getEventQueueSize()).thenReturn(10);
+    Mockito.when(sender.getEventSecondaryQueueSize()).thenReturn(11);
     senderStats.endPut(testStartTime);
     senderStats.endBatch(testStartTime, 100);
     senderStats.incEventsNotQueuedConflated();
@@ -64,6 +65,7 @@ public class GatewayMBeanBridgeJUnitTest extends MBeanStatsTestCase {
     assertEquals(1, getTotalBatchesRedistributed());
     assertEquals(1, getTotalEventsConflated());
     assertEquals(10, getEventQueueSize());
+    assertEquals(11, getEventSecondaryQueueSize());
     assertTrue(getEventsQueuedRate() > 0);
     assertTrue(getEventsReceivedRate() > 0);
     assertTrue(getBatchesDispatchedRate() > 0);
@@ -81,6 +83,10 @@ public class GatewayMBeanBridgeJUnitTest extends MBeanStatsTestCase {
 
   private int getEventQueueSize() {
     return bridge.getEventQueueSize();
+  }
+
+  private int getEventSecondaryQueueSize() {
+    return bridge.getEventSecondaryQueueSize();
   }
 
   private float getEventsQueuedRate() {

@@ -388,9 +388,9 @@ public class ConcurrentWANPropagation_2_DUnitTest extends WANTestBase {
 
     vm5.invoke(() -> WANTestBase.doPuts(getTestMethodName() + "_RR", 1000));
 
-    vm4.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 0, 0, 0));
+    vm4.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 0, 0, 0, 0));
 
-    vm5.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 1000, 0, 0));
+    vm5.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 0, 1000, 0, 0));
 
     vm5.invoke(() -> WANTestBase.validateRegionSize(getTestMethodName() + "_RR", 1000));
 

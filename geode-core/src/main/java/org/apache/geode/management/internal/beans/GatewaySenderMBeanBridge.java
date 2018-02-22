@@ -243,6 +243,10 @@ public class GatewaySenderMBeanBridge {
     return abstractSender.getEventQueueSize();
   }
 
+  public int getEventSecondaryQueueSize() {
+    return abstractSender.getEventSecondaryQueueSize();
+  }
+
   public float getEventsQueuedRate() {
     return eventsQueuedRate.getRate();
   }

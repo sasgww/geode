@@ -309,6 +309,10 @@ public class StatsKey {
   /** AsyncEventQueue Stats **/
   public static final String ASYNCEVENTQUEUE_EVENTS_QUEUE_SIZE = "eventQueueSize";
 
+  /** AsyncEventQueue Stats **/
+  public static final String ASYNCEVENTQUEUE_EVENTS_SECONDARY_QUEUE_SIZE =
+      "eventSecondaryQueueSize";
+
   /** LRU stats **/
 
   public static final String LRU_EVICTIONS = "lruEvictions";

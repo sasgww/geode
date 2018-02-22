@@ -123,6 +123,7 @@ import org.apache.geode.distributed.internal.ServerLocation;
 import org.apache.geode.internal.AvailablePort;
 import org.apache.geode.internal.AvailablePortHelper;
 import org.apache.geode.internal.admin.remote.DistributionLocatorId;
+import org.apache.geode.internal.cache.AbstractBucketRegionQueue;
 import org.apache.geode.internal.cache.BucketRegion;
 import org.apache.geode.internal.cache.CacheConfig;
 import org.apache.geode.internal.cache.CacheServerImpl;
@@ -621,9 +622,22 @@ public class WANTestBase extends JUnit4DistributedTestCase {
       pfact.setTotalNumBuckets(totalNumBuckets);
       pfact.setRedundantCopies(redundantCopies);
       pfact.setRecoveryDelay(0);
+      // String prefix = null;
+      // String colocatedWith = null;
+      // int pos = regionName.lastIndexOf('_');
+      // if (pos != -1) {
+      // prefix = regionName.substring(0, pos);
+      // colocatedWith = prefix + "_0";
+      // }
+      // System.out.println("GGGZ:" + prefix + ":" + colocatedWith + ":" + regionName);
+      // if (!regionName.endsWith("_0")) {
+      // System.out.println("GGGX:" + colocatedWith);
+      // pfact.setColocatedWith(colocatedWith);
+      // }
       fact.setPartitionAttributes(pfact.create());
       fact.setOffHeap(offHeap);
       Region r = cache.createRegionFactory(fact.create()).create(regionName);
+      System.out.println("GGGY:" + regionName);
       assertNotNull(r);
     } finally {
       exp.remove();
@@ -1181,6 +1195,11 @@ public class WANTestBase extends JUnit4DistributedTestCase {
     if (expectedQueueSize != -1) {
       final RegionQueue regionQueue;
       regionQueue = sender.getQueues().toArray(new RegionQueue[1])[0];
+      ConcurrentParallelGatewaySenderQueue parallelGatewaySenderQueue =
+          (ConcurrentParallelGatewaySenderQueue) regionQueue;
+      PartitionedRegion pr =
+          parallelGatewaySenderQueue.getRegions().toArray(new PartitionedRegion[1])[0];
+      getRandomPrimaryBucket(pr, true);
       Awaitility.await().atMost(120, TimeUnit.SECONDS)
           .until(() -> assertEquals("Expected queue entries: " + expectedQueueSize
               + " but actual entries: " + regionQueue.size(), expectedQueueSize,
@@ -1197,11 +1216,26 @@ public class WANTestBase extends JUnit4DistributedTestCase {
     stats.add(statistics.getEventsNotQueuedConflated());
     stats.add(statistics.getEventsConflatedFromBatches());
     stats.add(statistics.getConflationIndexesMapSize());
+    stats.add(statistics.getEventSecondaryQueueSize());
+    stats.add(statistics.getEventSecondaryQueueSize()); // GGG
     return stats;
   }
 
-  public static void checkQueueStats(String senderId, final int queueSize, final int eventsReceived,
-      final int eventsQueued, final int eventsDistributed) {
+  protected static void getRandomPrimaryBucket(PartitionedRegion prQ, boolean isPrimary) {
+    if (prQ != null) {
+      Set<Map.Entry<Integer, BucketRegion>> allBuckets = prQ.getDataStore().getAllLocalBuckets();
+      List<Integer> thisProcessorBuckets = new ArrayList<Integer>();
+
+      for (Map.Entry<Integer, BucketRegion> bucketEntry : allBuckets) {
+        BucketRegion bucket = bucketEntry.getValue();
+        int bId = bucket.getId();
+        System.out.println("GGG:" + bId + ":" + bucket.getBucketAdvisor().isPrimary());
+      }
+    }
+  }
+
+  public static void checkQueueStats(String senderId, final int queueSize, int secondaryQueueSize,
+      final int eventsReceived, final int eventsQueued, final int eventsDistributed) {
     GatewaySenderStats statistics = getGatewaySenderStats(senderId);
     assertEquals(queueSize, statistics.getEventQueueSize());
     assertEquals(eventsReceived, statistics.getEventsReceived());

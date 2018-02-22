@@ -53,6 +53,7 @@ public class SerialAsyncEventQueueImplJUnitTest {
     queue.getStatistics().incTempQueueSize(10);
 
     assertEquals(5, queue.getStatistics().getEventQueueSize());
+    assertEquals(5, queue.getStatistics().getEventSecondaryQueueSize()); // GGG
     assertEquals(10, queue.getStatistics().getTempEventQueueSize());
 
     queue.stop();

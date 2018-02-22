@@ -80,10 +80,10 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     pause(2000);
     vm2.invoke(() -> WANTestBase.checkGatewayReceiverStats(100, 1000, 1000));
 
-    vm4.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 1000, 1000, 1000));
+    vm4.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 0, 1000, 1000, 1000));
     vm4.invoke(() -> WANTestBase.checkBatchStats("ln", 100));
 
-    vm5.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 1000, 0, 0));
+    vm5.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 0, 1000, 0, 0));
     vm5.invoke(() -> WANTestBase.checkBatchStats("ln", 0));
 
   }
@@ -119,10 +119,10 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     pause(2000);
     vm2.invoke(() -> WANTestBase.checkGatewayReceiverStats(100, 1000, 1000));
 
-    vm4.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 1000, 1000, 1000));
+    vm4.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 0, 1000, 1000, 1000));
     vm4.invoke(() -> WANTestBase.checkBatchStats("ln", 100));
 
-    vm5.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 1000, 0, 0));
+    vm5.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 0, 1000, 0, 0));
     vm5.invoke(() -> WANTestBase.checkBatchStats("ln", 0));
 
   }
@@ -175,13 +175,13 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     vm2.invoke(() -> WANTestBase.checkGatewayReceiverStats(100, 1000, 1000));
     vm3.invoke(() -> WANTestBase.checkGatewayReceiverStats(100, 1000, 1000));
 
-    vm4.invoke(() -> WANTestBase.checkQueueStats("lnSerial1", 0, 1000, 1000, 1000));
+    vm4.invoke(() -> WANTestBase.checkQueueStats("lnSerial1", 0, 0, 1000, 1000, 1000));
     vm4.invoke(() -> WANTestBase.checkBatchStats("lnSerial1", 100));
-    vm4.invoke(() -> WANTestBase.checkQueueStats("lnSerial2", 0, 1000, 1000, 1000));
+    vm4.invoke(() -> WANTestBase.checkQueueStats("lnSerial2", 0, 0, 1000, 1000, 1000));
     vm4.invoke(() -> WANTestBase.checkBatchStats("lnSerial2", 100));
-    vm5.invoke(() -> WANTestBase.checkQueueStats("lnSerial1", 0, 1000, 0, 0));
+    vm5.invoke(() -> WANTestBase.checkQueueStats("lnSerial1", 0, 0, 1000, 0, 0));
     vm5.invoke(() -> WANTestBase.checkBatchStats("lnSerial1", 0));
-    vm5.invoke(() -> WANTestBase.checkQueueStats("lnSerial2", 0, 1000, 0, 0));
+    vm5.invoke(() -> WANTestBase.checkQueueStats("lnSerial2", 0, 0, 1000, 0, 0));
     vm5.invoke(() -> WANTestBase.checkBatchStats("lnSerial2", 0));
 
   }
@@ -286,12 +286,12 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     vm3.invoke(() -> WANTestBase.validateRegionSize(testName + "_RR_2", 500));
 
     pause(2000);
-    vm4.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 1500, 1500, 1500));
+    vm4.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 0, 1500, 1500, 1500));
     vm4.invoke(() -> WANTestBase.checkBatchStats("ln", 75));
     vm4.invoke(() -> WANTestBase.checkUnProcessedStats("ln", 0));
 
 
-    vm5.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 1500, 0, 0));
+    vm5.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 0, 1500, 0, 0));
     vm5.invoke(() -> WANTestBase.checkBatchStats("ln", 0));
     vm5.invoke(() -> WANTestBase.checkUnProcessedStats("ln", 1500));
   }
@@ -419,13 +419,13 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     vm2.invoke(() -> WANTestBase.validateRegionSize(testName, 800));
 
     pause(2000);
-    vm4.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 1000, 900, 800));
+    vm4.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 0, 1000, 900, 800));
     vm4.invoke(() -> WANTestBase.checkEventFilteredStats("ln", 200));
     vm4.invoke(() -> WANTestBase.checkBatchStats("ln", 80));
     vm4.invoke(() -> WANTestBase.checkUnProcessedStats("ln", 0));
 
 
-    vm5.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 1000, 0, 0));
+    vm5.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 0, 1000, 0, 0));
     vm5.invoke(() -> WANTestBase.checkBatchStats("ln", 0));
     vm5.invoke(() -> WANTestBase.checkUnProcessedStats("ln", 900));
   }
@@ -487,7 +487,7 @@ public class SerialWANStatsDUnitTest extends WANTestBase {
     vm3.invoke(() -> WANTestBase.validateRegionContents(testName, keyValues));
 
     pause(2000);
-    vm4.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 2000, 2000, 1500));
+    vm4.invoke(() -> WANTestBase.checkQueueStats("ln", 0, 0, 2000, 2000, 1500));
     vm4.invoke(() -> WANTestBase.checkConflatedStats("ln", 500));
   }
 
