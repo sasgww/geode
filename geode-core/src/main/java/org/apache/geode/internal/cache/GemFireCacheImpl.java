@@ -134,7 +134,6 @@ import org.apache.geode.cache.client.internal.PoolImpl;
 import org.apache.geode.cache.control.ResourceManager;
 import org.apache.geode.cache.execute.FunctionService;
 import org.apache.geode.cache.query.QueryService;
-import org.apache.geode.cache.query.internal.DefaultQuery;
 import org.apache.geode.cache.query.internal.DefaultQueryService;
 import org.apache.geode.cache.query.internal.InternalQueryService;
 import org.apache.geode.cache.query.internal.QueryMonitor;
@@ -5057,7 +5056,13 @@ public class GemFireCacheImpl implements InternalCache, InternalClientCache, Has
    * requested getObject() on the PdxInstance.
    */
   public boolean getPdxReadSerializedByAnyGemFireServices() {
-    return (getPdxReadSerialized() || DefaultQuery.getPdxReadSerialized())
+    TypeRegistry pdxRegistry = this.getPdxRegistry();
+    boolean pdxReadSerializedOverriden = false;
+    if (pdxRegistry != null) {
+      pdxReadSerializedOverriden = pdxRegistry.getPdxReadSerializedOverride();
+    }
+
+    return (getPdxReadSerialized() || pdxReadSerializedOverriden)
         && PdxInstanceImpl.getPdxReadSerialized();
   }
 
@@ -5151,7 +5156,7 @@ public class GemFireCacheImpl implements InternalCache, InternalClientCache, Has
   @Override
   public void setReadSerializedForCurrentThread(boolean value) {
     PdxInstanceImpl.setPdxReadSerialized(value);
-    DefaultQuery.setPdxReadSerialized(value);
+    this.getPdxRegistry().setPdxReadSerializedOverride(value);
   }
 
   // test hook

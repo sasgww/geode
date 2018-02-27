@@ -206,7 +206,7 @@ public abstract class LuceneIndexImpl implements InternalLuceneIndex {
     if (factory == null) {
       return null;
     }
-    LuceneEventListener listener = new LuceneEventListener(repositoryManager);
+    LuceneEventListener listener = new LuceneEventListener(cache, repositoryManager);
     factory.setGatewayEventSubstitutionListener(new LuceneEventSubstitutionFilter());
     AsyncEventQueue indexQueue = factory.create(aeqId, listener);
     return indexQueue;

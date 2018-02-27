@@ -169,7 +169,9 @@ public class QueryMessage extends StreamingPartitionOperation.StreamingPartition
 
     DefaultQuery query = new DefaultQuery(this.queryString, pr.getCache(), false);
     // Remote query, use the PDX types in serialized form.
-    DefaultQuery.setPdxReadSerialized(pr.getCache(), true);
+    Boolean initialPdxReadSerialized =
+        pr.getCache().getPdxRegistry().getPdxReadSerializedOverride();
+    pr.getCache().getPdxRegistry().setPdxReadSerializedOverride(true);
     // In case of "select *" queries we can keep the results in serialized form and send
     query.setRemoteQuery(true);
     QueryObserver indexObserver = query.startTrace();
@@ -249,7 +251,7 @@ public class QueryMessage extends StreamingPartitionOperation.StreamingPartition
       if (isQueryTraced) {
         this.resultCollector.remove(queryTraceList);
       }
-      DefaultQuery.setPdxReadSerialized(pr.getCache(), false);
+      pr.getCache().getPdxRegistry().setPdxReadSerializedOverride(initialPdxReadSerialized);
       query.setRemoteQuery(false);
       query.endTrace(indexObserver, traceStartTime, this.resultCollector);
     }

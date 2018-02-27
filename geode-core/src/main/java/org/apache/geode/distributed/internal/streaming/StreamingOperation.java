@@ -33,6 +33,8 @@ import org.apache.geode.GemFireRethrowable;
 import org.apache.geode.InternalGemFireError;
 import org.apache.geode.InternalGemFireException;
 import org.apache.geode.SystemFailure;
+import org.apache.geode.cache.Cache;
+import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.query.internal.DefaultQuery;
 import org.apache.geode.cache.query.internal.PRQueryTraceInfo;
 import org.apache.geode.cache.query.internal.QueryMonitor;
@@ -52,11 +54,13 @@ import org.apache.geode.distributed.internal.membership.InternalDistributedMembe
 import org.apache.geode.internal.HeapDataOutputStream;
 import org.apache.geode.internal.InternalDataSerializer;
 import org.apache.geode.internal.Version;
+import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.cache.PartitionedRegionQueryEvaluator;
 import org.apache.geode.internal.cache.Token;
 import org.apache.geode.internal.i18n.LocalizedStrings;
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.internal.util.BlobHelper;
+import org.apache.geode.pdx.internal.TypeRegistry;
 
 /**
  * StreamingOperation is an abstraction for sending messages to multiple (or single) recipient
@@ -433,7 +437,6 @@ public abstract class StreamingOperation {
                                                   // messageProcessor is of type
                                                   // PartitionedRegionQueryEvaluator.StreamingQueryPartitionResponse
 
-
     /**
      * @param chunkStream the data to send back, if null then all the following parameters are
      *        ignored and any future replies from this member will be ignored, and the streaming of
@@ -451,21 +454,21 @@ public abstract class StreamingOperation {
     public static void send(InternalDistributedMember recipient, int processorId,
         ReplyException exception, DistributionManager dm, HeapDataOutputStream chunkStream,
         int numObjects, int msgNum, boolean lastMsg, boolean pdxReadSerialized) {
-      StreamingReplyMessage m = new StreamingReplyMessage();
-      m.processorId = processorId;
+      StreamingReplyMessage replyMessage = new StreamingReplyMessage();
+      replyMessage.processorId = processorId;
 
       if (exception != null) {
-        m.setException(exception);
-        logger.debug("Replying with exception: {}", m, exception);
+        replyMessage.setException(exception);
+        logger.debug("Replying with exception: {}", replyMessage, exception);
       }
 
-      m.chunkStream = chunkStream;
-      m.numObjects = numObjects;
-      m.setRecipient(recipient);
-      m.msgNum = msgNum;
-      m.lastMsg = lastMsg;
-      m.pdxReadSerialized = pdxReadSerialized;
-      dm.putOutgoing(m);
+      replyMessage.chunkStream = chunkStream;
+      replyMessage.numObjects = numObjects;
+      replyMessage.setRecipient(recipient);
+      replyMessage.msgNum = msgNum;
+      replyMessage.lastMsg = lastMsg;
+      replyMessage.pdxReadSerialized = pdxReadSerialized;
+      dm.putOutgoing(replyMessage);
     }
 
     public int getMessageNumber() {
@@ -501,6 +504,8 @@ public abstract class StreamingOperation {
       this.pdxReadSerialized = in.readBoolean();
       Version senderVersion = InternalDataSerializer.getVersionForDataStream(in);
       boolean isSenderAbove_8_1 = senderVersion.compareTo(Version.GFE_81) > 0;
+      InternalCache cache = (InternalCache) CacheFactory.getAnyInstance();
+      Boolean initialPdxReadSerialized = cache.getPdxRegistry().getPdxReadSerializedOverride();
       if (n == -1) {
         this.objectList = null;
       } else {
@@ -509,7 +514,7 @@ public abstract class StreamingOperation {
         // Check if the PDX types needs to be kept in serialized form.
         // This will make readObject() to return PdxInstance form.
         if (this.pdxReadSerialized) {
-          DefaultQuery.setPdxReadSerialized(true);
+          cache.getPdxRegistry().setPdxReadSerializedOverride(true);
         }
         try {
           ReplyProcessor21 messageProcessor = ReplyProcessor21.getProcessor(processorId);
@@ -555,7 +560,7 @@ public abstract class StreamingOperation {
           }
         } finally {
           if (this.pdxReadSerialized) {
-            DefaultQuery.setPdxReadSerialized(false);
+            cache.getPdxRegistry().setPdxReadSerializedOverride(initialPdxReadSerialized);
           }
         }
       }

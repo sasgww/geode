@@ -27,12 +27,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.EntryEvent;
 import org.apache.geode.cache.RegionEvent;
 import org.apache.geode.cache.SerializedCacheValue;
 import org.apache.geode.connectors.jdbc.internal.SqlHandler;
+import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.cache.InternalRegion;
 import org.apache.geode.pdx.PdxInstance;
+import org.apache.geode.test.fake.Fakes;
 import org.apache.geode.test.junit.categories.UnitTest;
 
 @Category(UnitTest.class)
@@ -43,6 +46,7 @@ public class JdbcWriterTest {
   private SqlHandler sqlHandler;
   private SerializedCacheValue<Object> serializedNewValue;
   private RegionEvent<Object, Object> regionEvent;
+  private InternalCache cache;
 
   private JdbcWriter<Object, Object> writer;
 
@@ -53,12 +57,14 @@ public class JdbcWriterTest {
     sqlHandler = mock(SqlHandler.class);
     serializedNewValue = mock(SerializedCacheValue.class);
     regionEvent = mock(RegionEvent.class);
+    cache = Fakes.cache();
 
     when(entryEvent.getRegion()).thenReturn(mock(InternalRegion.class));
+    when(entryEvent.getRegion().getRegionService()).thenReturn(cache);
     when(entryEvent.getSerializedNewValue()).thenReturn(serializedNewValue);
     when(serializedNewValue.getDeserializedValue()).thenReturn(pdxInstance);
 
-    writer = new JdbcWriter<>(sqlHandler);
+    writer = new JdbcWriter<>(sqlHandler, cache);
   }
 
   @Test
